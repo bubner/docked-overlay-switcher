@@ -2,6 +2,7 @@ import { callable, definePlugin } from "@decky/api";
 import { PanelSection, SliderField, staticClasses, ToggleField } from "@decky/ui";
 import { useEffect, useState } from "react";
 import { FaTv } from "react-icons/fa";
+import { PerfStore } from "./PerfStore";
 
 type Settings = {
     handheldEnabled: boolean;
@@ -84,7 +85,7 @@ function Content() {
     }
 
     if (!settings) {
-        return "Loading...";
+        return <div style={{ textAlign: "center", width: "100%" }}>Loading...</div>;
     }
 
     return (
@@ -109,11 +110,20 @@ function Content() {
     );
 }
 
+function onDisplayUpdate() {
+    // TODO: get display info and call PerfStore
+}
+
 export default definePlugin(() => {
+    PerfStore.init();
+    const listener = SteamClient.System.DisplayManager.RegisterForStateChanges(onDisplayUpdate);
     return {
         name: "Docked Overlay Switcher",
         titleView: <div className={staticClasses.Title}>Overlay Switcher</div>,
         content: <Content />,
         icon: <FaTv />,
+        onDismount: () => {
+            if (listener) listener.unregister();
+        },
     };
 });
