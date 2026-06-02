@@ -10,7 +10,7 @@ settings.read()
 
 class Plugin:
     async def _main(self):
-        decky.logger.info("Hello World!")
+        pass
  
     async def get_settings(self) -> dict[str, int | bool]:
         """
