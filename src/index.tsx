@@ -1,10 +1,11 @@
-import { callable, definePlugin } from "@decky/api";
+import { callable, definePlugin, toaster } from "@decky/api";
 import { PanelSection, SliderField, staticClasses, ToggleField } from "@decky/ui";
 import { useEffect, useState } from "react";
 import { FaTv } from "react-icons/fa";
 import { PerfStore } from "./PerfStore";
 
 type Settings = {
+    notifyOnChange: boolean;
     handheldEnabled: boolean;
     handheldLevel: number;
     dockedEnabled: boolean;
@@ -108,17 +109,51 @@ function Content() {
                     onLevelChange={(v) => dispatch({ dockedLevel: v })}
                 />
             </PanelSection>
+            <PanelSection title="Other">
+                <ToggleField
+                    label="Show notification on change"
+                    description="Whether to show a notification when the mode is updated successfully"
+                    checked={settings.notifyOnChange}
+                    onChange={(e) => dispatch({ notifyOnChange: e })}
+                />
+            </PanelSection>
         </>
     );
 }
 
+let lastNotificationInvocation = -1;
+
 async function onDisplayUpdate() {
     const settings = await getSettings();
     const docked = await isDocked();
+
+    const oldIndex = PerfStore.getSteamIndex();
+    let newIndex = oldIndex;
     if (docked && settings.dockedEnabled) {
-        PerfStore.setSteamIndex(settings.dockedLevel);
-    } else if (settings.handheldEnabled) {
-        PerfStore.setSteamIndex(settings.handheldLevel);
+        newIndex = settings.dockedLevel;
+    } else if (!docked && settings.handheldEnabled) {
+        newIndex = settings.handheldLevel;
+    }
+
+    PerfStore.setSteamIndex(newIndex);
+
+    // onDisplayUpdate can fire multiple times per docking/undocking.
+    // While this is idempotent to the PerfStore index, sending multiple notifications
+    // is intrusive and annoying. A debounce of 1000ms is implemented between notifications
+    // to ensure only one can be queued at a time
+    if (lastNotificationInvocation + 1000 > Date.now() || oldIndex == newIndex) {
+        return;
+    }
+    lastNotificationInvocation = Date.now();
+    if (settings.notifyOnChange) {
+        toaster.toast({
+            title: docked ? "Docked" : "Undocked",
+            body: `Switched overlay level from ${oldIndex === 0 ? "OFF" : oldIndex} to ${newIndex === 0 ? "OFF" : newIndex}`,
+            // https://gist.github.com/mdeguzis/7bef2731edd67a6dea06ffc622a1bae6
+            playSound: false,
+            sound: 0,
+            eType: 40,
+        });
     }
 }
 

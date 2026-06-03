@@ -19,6 +19,7 @@ class Plugin:
         """
         settings.read()
         return {
+            "notifyOnChange": settings.getSetting("notifyOnChange", True),
             "handheldEnabled": settings.getSetting("handheldEnabled", True),
             "handheldLevel": settings.getSetting("handheldLevel", 0),
             "dockedEnabled": settings.getSetting("dockedEnabled", True),
