@@ -1,4 +1,5 @@
 from os import getenv
+from subprocess import run
 
 import decky
 from settings import SettingsManager
@@ -31,3 +32,11 @@ class Plugin:
         for key, value in new_settings.items():
             settings.setSetting(key, value)
         settings.commit()
+        
+    async def is_docked(self) -> bool:
+        """
+        Scans currently connected displays to determine if the system is currently "docked" (DisplayPort is connected).
+        """
+        # Linux DRM will return "disconnected" or "connected"
+        res = run(["cat", "/sys/class/drm/card0-DP-1/status"], capture_output=True, text=True, check=False)
+        return res.stdout.strip() == "connected"

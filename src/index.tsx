@@ -15,6 +15,8 @@ const getSettings = callable<[], Settings>("get_settings");
 
 const setSettings = callable<[new_settings: Settings], void>("set_settings");
 
+const isDocked = callable<[], boolean>("is_docked");
+
 function PerformanceSlider({
     enabled,
     level,
@@ -110,13 +112,13 @@ function Content() {
     );
 }
 
-function onDisplayUpdate() {
-    // TODO: get display info and call PerfStore
+async function onDisplayUpdate() {
+    const docked = await isDocked();
 }
 
 export default definePlugin(() => {
     PerfStore.init();
-    const listener = SteamClient.System.DisplayManager.RegisterForStateChanges(onDisplayUpdate);
+    const listener = SteamClient?.System?.DisplayManager?.RegisterForStateChanges(onDisplayUpdate);
     return {
         name: "Docked Overlay Switcher",
         titleView: <div className={staticClasses.Title}>Overlay Switcher</div>,
