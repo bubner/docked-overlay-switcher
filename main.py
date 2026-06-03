@@ -10,7 +10,7 @@ settings = SettingsManager(name="settings", settings_directory=getenv("DECKY_PLU
 settings.read()
 
 class Plugin:
-    async def _main(self):
+    async def _main(self) -> None:
         pass
  
     async def get_settings(self) -> dict[str, int | bool]:
@@ -26,7 +26,7 @@ class Plugin:
             "dockedLevel": settings.getSetting("dockedLevel", 0)
         }
     
-    async def set_settings(self, new_settings: dict[str, int | bool]):
+    async def set_settings(self, new_settings: dict[str, int | bool]) -> None:
         """
         Updates and commits new user settings.
         """

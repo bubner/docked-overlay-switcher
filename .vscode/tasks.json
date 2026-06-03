@@ -65,7 +65,7 @@
         {
             "label": "build",
             "group": "build",
-            "detail": "Build decky-plugin-template",
+            "detail": "Build docked-overlay-switcher",
             "dependsOrder": "sequence",
             "dependsOn": [
                 "setup",
