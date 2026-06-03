@@ -141,11 +141,8 @@ async function onDisplayUpdate() {
     // While this is idempotent to the PerfStore index, sending multiple notifications
     // is intrusive and annoying. A debounce of 1000ms is implemented between notifications
     // to ensure only one can be queued at a time
-    if (lastNotificationInvocation + 1000 > Date.now() || oldIndex == newIndex) {
-        return;
-    }
-    lastNotificationInvocation = Date.now();
-    if (settings.notifyOnChange) {
+    if (settings.notifyOnChange && oldIndex !== newIndex && lastNotificationInvocation + 1000 <= Date.now()) {
+        lastNotificationInvocation = Date.now();
         toaster.toast({
             title: docked ? "Docked" : "Undocked",
             body: `Switched overlay level from ${oldIndex === 0 ? "OFF" : oldIndex} to ${newIndex === 0 ? "OFF" : newIndex}`,
