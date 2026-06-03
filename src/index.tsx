@@ -113,7 +113,13 @@ function Content() {
 }
 
 async function onDisplayUpdate() {
+    const settings = await getSettings();
     const docked = await isDocked();
+    if (docked && settings.dockedEnabled) {
+        PerfStore.setSteamIndex(settings.dockedLevel);
+    } else if (settings.handheldEnabled) {
+        PerfStore.setSteamIndex(settings.handheldLevel);
+    }
 }
 
 export default definePlugin(() => {
