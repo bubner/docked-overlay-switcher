@@ -21,7 +21,7 @@
     "steam-os",
     "steam-deck-plugin"
   ],
-  "author": "Lucas Bubner <bubner@proton.me>",
+  "author": "Lucas Bubner <lucas@bubner.me>",
   "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/bubner/docked-overlay-switcher/issues"
